@@ -3,46 +3,15 @@
 
 1. **Accuracy** (whether the correct selector is found among the top 10 suggestions and at which index).
 2. **Timing** (the total and average time taken to compute suggestions for each prefix size).
-
-Below is a short overview of the main responsibilities and methods:
-
-## Main Responsibilities
-
-1. **Setup and Running (`run`, `runFor:`)**
-   - `run` iterates through all methods in the given scope, parsing them and finding message callsites to benchmark.
-   - `runFor:` is a convenience class method to instantiate and immediately run benchmarks for a given class.
-
-2. **Benchmarking a Callsite (`benchCallsite:atPosition:`)**
-   - For each callsite, it loops from a prefix length of 2 to 8 characters (or fewer if the selector is shorter).
-   - It records whether the original selector was found among the top 10 completion candidates and at which index.
-   - It also tracks the time it took to produce the suggestions, accumulating them in `completionTimes`.
-
-3. **Measuring Accuracy (`accuracyForCompletionIndex:withPrefixSize:`)**
-   - Determines how often the correct selector is found within specific top-index ranges (e.g., 1st, 2nd, 3rd) for a given prefix size.
-   - This is computed by dividing the number of successful finds by the total number of attempts.
-
-4. **Measuring Time (`logTime:forPrefix:`, `totalTimeForPrefix:`)**
-   - Each benchmark run logs the execution time in `completionTimes`.
-   - Methods such as `totalTimeForPrefix:` and `averageTimeForPrefix:` allow for aggregating and presenting these timings.
-
-5. **Inspection and Presentation (`inspectionResults`, `timeResults`)**
-   - Includes methods decorated with `<inspectorPresentationOrder:>` to present **accuracy results** in a table (via `SpTablePresenter`).
-   - Presents **timing results** in a similar way, showing total and average execution times per prefix size.
-
-## Key Data Structures
-
-- **`completionBenchs`**: A nested dictionary storing the count of how many times a selector was found at a certain prefix size and position (index in the top-10 list).
-- **`completionTimes`**: A dictionary storing the total and count of all execution times, keyed by prefix size.
+3. **Memory Usage** (the total and average memory consumed during benchmark execution).
+4. **Mean Reciprocal Rank (MRR)** (measures how high the correct suggestion appears in the ranked list).
+5. **Normalized Discounted Cumulative Gain (NDCG)** (evaluates ranking quality based on relevance distribution).
+6. **Rank Distribution** (counts how frequently the correct completion appears in each ranking position).
+7. **Recall@K** (measures how often the correct result appears within the top-K results).
 
 ## Typical Usage
 
-Here is an example of how you might run benchmarks on a given package or class ( see my subclasses )
-
-Using these benchmarks, you can measure:
-
-- **Which prefix sizes produce the best completion accuracy.**
-- **How quickly the suggestions are generated** (i.e., performance considerations).
-- **Overall completion performance** for different sets of heuristics or sorters.
+See my subclasses
 
 "
 Class {
@@ -150,16 +119,18 @@ CoStaticBenchmarks class >> sorterClasses [
 { #category : 'metrics' }
 CoStaticBenchmarks >> accuracyForCompletionIndex: completionIndexRange withPrefixSize: prefixSize [
 
+	"Computes the accuracy for a given completion index range and prefix size."
 	| totalEntries |
 	totalEntries := self totalEntriesPerPrefixSize: prefixSize.
 	totalEntries = 0 ifTrue: [ ^ 0 ].
 	^ (completionIndexRange sum: [ :index |
-		(completionBenchs at: index at: prefixSize ifAbsent: [ {0} ]) first
-	]) / totalEntries
+		   (completionBenchs at: index at: prefixSize ifAbsent: [ { 0 } ])
+			   first ]) / totalEntries
 ]
 
 { #category : 'inspector' }
 CoStaticBenchmarks >> accuracyInspectionResults [
+	"Generates a table displaying completion accuracy."
 
 	<inspectorPresentationOrder: 0 title: 'Accuracy'>
 	| table |
@@ -195,61 +166,60 @@ CoStaticBenchmarks >> accuracyInspectionResults [
 ]
 
 { #category : 'metrics' }
-CoStaticBenchmarks >> accuracyPerSelectorLength: selectorLength [ 
+CoStaticBenchmarks >> accuracyPerSelectorLength: selectorLength [
 
-    | relevantCallsites correctCount totalCount |
-    relevantCallsites := 0.
-    correctCount := 0.
-    totalCount := 0.
-    completionBenchs keysAndValuesDo: [ :rank :prefixDict |
-        prefixDict keysAndValuesDo: [ :pSize :info |
-            | count usedSelectors |
-            count := info first. 
-            usedSelectors := info second.
-            usedSelectors do: [ :sel |
-                (sel size = selectorLength) ifTrue: [
-                    relevantCallsites := relevantCallsites + 1.
-                    rank ~= 0 
-                        ifTrue: [ correctCount := correctCount + 1 ]. 
-                ].
-            ].
-            totalCount := totalCount + count
-        ]
-    ].
-    relevantCallsites = 0 ifTrue: [ ^ 0 ].
-    ^ correctCount asFloat / relevantCallsites
+	"Computes the accuracy of completions based on method selector length."
+	| relevantCallsites correctCount totalCount |
+	relevantCallsites := 0.
+	correctCount := 0.
+	totalCount := 0.
+	completionBenchs keysAndValuesDo: [ :rank :prefixDict |
+		prefixDict keysAndValuesDo: [ :pSize :info |
+			| count usedSelectors |
+			count := info first.
+			usedSelectors := info second.
+			usedSelectors do: [ :sel |
+				sel size = selectorLength ifTrue: [
+					relevantCallsites := relevantCallsites + 1.
+					rank ~= 0 ifTrue: [ correctCount := correctCount + 1 ] ] ].
+			totalCount := totalCount + count ] ].
+	relevantCallsites = 0 ifTrue: [ ^ 0 ].
+	^ correctCount asFloat / relevantCallsites
 ]
 
 { #category : 'metrics' }
-CoStaticBenchmarks >> averageMemoryForPrefix: prefixSize [ 
+CoStaticBenchmarks >> averageMemoryForPrefix: prefixSize [
 
-    | stats |
-    stats := memoryUsages at: prefixSize ifAbsent: [ #( 0 0 ) ].
-    stats second = 0
-        ifTrue: [ ^ 0 ]
-        ifFalse: [ ^ stats first / stats second ]
-
+	"Computes the average memory usage for a given prefix size."
+	| stats |
+	stats := memoryUsages at: prefixSize ifAbsent: [ #( 0 0 ) ].
+	stats second = 0
+		ifTrue: [ ^ 0 ]
+		ifFalse: [ ^ stats first / stats second ]
 ]
 
 { #category : 'metrics' }
 CoStaticBenchmarks >> averageTimeForPrefix: prefixSize [
 
-    | times |
-    times := completionTimes at: prefixSize ifAbsent: [ #( 0 0 ) ].
-    times second = 0
-        ifTrue: [ ^ 0 ]
-        ifFalse: [ ^ times first / times second ]
+	"Computes the average execution time for completions with a given prefix size."
+	| times |
+	times := completionTimes at: prefixSize ifAbsent: [ #( 0 0 ) ].
+	times second = 0
+		ifTrue: [ ^ 0 ]
+		ifFalse: [ ^ times first / times second ]
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarks >> benchCallsite: aMessageNode atPosition: aPosition [ 
+CoStaticBenchmarks >> benchCallsite: aMessageNode atPosition: aPosition [
 
+	"A placeholder method meant to be implemented by subclasses to execute a benchmark on a given callsite."
 	self subclassResponsibility
 ]
 
 { #category : 'benchmarks' }
 CoStaticBenchmarks >> buildCompletionFor: aMessageNode atPosition: aPosition [
 
+	"A subclass responsibility method to generate completion suggestions."
 	self subclassResponsibility
 ]
 
@@ -381,12 +351,6 @@ CoStaticBenchmarks >> extractPrefixFrom: receiver at: index [
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarks >> extractPrefixFromSelector: selector at: index [
-
-	self subclassResponsibility
-]
-
-{ #category : 'benchmarks' }
 CoStaticBenchmarks >> fetchTopCandidatesFrom: completion usingPrefix: prefix [
 
 	self subclassResponsibility
@@ -394,12 +358,6 @@ CoStaticBenchmarks >> fetchTopCandidatesFrom: completion usingPrefix: prefix [
 
 { #category : 'benchmarks' }
 CoStaticBenchmarks >> findCompletionIndexFor: receiver inCandidates: candidates [
-
-	self subclassResponsibility
-]
-
-{ #category : 'benchmarks' }
-CoStaticBenchmarks >> findCompletionIndexForSelector: originalSelector inCandidates: candidates [
 
 	self subclassResponsibility
 ]
@@ -705,14 +663,9 @@ CoStaticBenchmarks >> maxPrefixSizeFor: receiver [
 	self subclassResponsibility
 ]
 
-{ #category : 'benchmarks' }
-CoStaticBenchmarks >> maxPrefixSizeForSelector: selector [
-
-	self subclassResponsibility
-]
-
 { #category : 'inspector' }
 CoStaticBenchmarks >> memoryInspectionResults [
+	"Displays memory usage statistics."
 
 	<inspectorPresentationOrder: 3 title: 'Memory Usage'>
 	| table |
@@ -730,7 +683,9 @@ CoStaticBenchmarks >> memoryInspectionResults [
 				          title: 'Total (MB)'
 				          evaluated: [ :prefixSize |
 					          ((self totalMemoryForPrefix: prefixSize) / 1024 / 1024)
-						           asFloat round: 2; asString ]);
+						          asFloat
+						          round: 2;
+						          asString ]);
 		         yourself.
 	^ table
 ]
@@ -766,36 +721,29 @@ CoStaticBenchmarks >> mmr [
 
 { #category : 'metrics' }
 CoStaticBenchmarks >> mmrForPrefixSize: prefixSize [
+	"Computes the Mean Reciprocal Rank (MRR) for a given prefix size."
+	| total sumOfReciprocalRanks |
+	total := self totalEntriesPerPrefixSize: prefixSize.
+	total = 0 ifTrue: [ ^ 0 ].
 
-    "Return the Mean Reciprocal Rank (MRR) for the given prefix size.
-     MRR = average of 1/rank for each callsite, where 'rank' is the 
-     position in the top-10 completions. If the correct method is not 
-     in the top 10, its reciprocal rank contribution is 0."
+	sumOfReciprocalRanks := 0.0.
 
-    | total sumOfReciprocalRanks |
-    total := self totalEntriesPerPrefixSize: prefixSize.
-    total = 0 ifTrue: [ ^ 0 ].
+	1 to: 10 do: [ :rank |
+		| entry rankCount |
+		entry := (completionBenchs at: rank ifAbsent: [ Dictionary new ])
+			         at: prefixSize
+			         ifAbsent: [ #( 0 #(  ) ) ].
 
-    sumOfReciprocalRanks := 0.0.
+		rankCount := entry first.
+		sumOfReciprocalRanks := sumOfReciprocalRanks
+		                        + (rankCount * (1 / rank)) ].
 
-    1 to: 10 do: [ :rank |
-        | entry rankCount |
-        entry := (completionBenchs
-                    at: rank
-                    ifAbsent: [ Dictionary new ])
-                  at: prefixSize
-                  ifAbsent: [ #(0 #()) ].
-
-        rankCount := entry first.
-        sumOfReciprocalRanks := sumOfReciprocalRanks + (rankCount * (1 / rank))
-    ].
-
-    ^ sumOfReciprocalRanks / total
+	^ sumOfReciprocalRanks / total
 ]
 
 { #category : 'inspector' }
 CoStaticBenchmarks >> mmrInspectionResults [
-
+	"Displays Mean Reciprocal Rank results."
 	<inspectorPresentationOrder: 4 title: 'MMR Results'>
 	| table |
 	table := SpTablePresenter new
@@ -858,6 +806,7 @@ CoStaticBenchmarks >> ndcgForPrefixSize: prefixSize [
 
 { #category : 'inspector' }
 CoStaticBenchmarks >> ndcgInspectionResults [
+	"Displays NDCG (ranking effectiveness) results."
 
 	<inspectorPresentationOrder: 5 title: 'NDCG Results'>
 	| table |
@@ -866,12 +815,10 @@ CoStaticBenchmarks >> ndcgInspectionResults [
 		         addColumn: (SpStringTableColumn
 				          title: 'Prefix'
 				          evaluated: [ :prefixSize | prefixSize asString ]);
-		         addColumn:
-			         (SpStringTableColumn
+		         addColumn: (SpStringTableColumn
 				          title: 'NDCG'
 				          evaluated: [ :prefixSize |
-					          (self ndcgForPrefixSize: prefixSize)
-						          asFloat round: 2 ]);
+					          (self ndcgForPrefixSize: prefixSize) asFloat round: 2 ]);
 		         yourself.
 	^ table
 ]
@@ -938,6 +885,7 @@ CoStaticBenchmarks >> recallAtK: k withPrefixSize: prefixSize [
 
 { #category : 'inspector' }
 CoStaticBenchmarks >> recallInspectionResults [
+	"Displays recall@K metrics."
 
 	<inspectorPresentationOrder: 7 title: 'Recall@K Results'>
 	| table kValues |
@@ -959,9 +907,10 @@ CoStaticBenchmarks >> recallInspectionResults [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarks >> run [ 
+CoStaticBenchmarks >> run [
 
-		self subclassResponsibility
+	"An abstract method that subclasses must implement to execute the benchmark."
+	self subclassResponsibility
 ]
 
 { #category : 'accessing' }
@@ -996,6 +945,7 @@ CoStaticBenchmarks >> startTimeMeasurement [
 
 { #category : 'inspector' }
 CoStaticBenchmarks >> timeInspectionResults [
+	"Generates a table displaying time-based benchmark results."
 
 	<inspectorPresentationOrder: 1 title: 'Time Results'>
 	| table |
@@ -1018,11 +968,12 @@ CoStaticBenchmarks >> timeInspectionResults [
 			         (SpStringTableColumn
 				          title: 'Average (ms)'
 				          evaluated: [ :prefixSize |
-					          (self averageTimeForPrefix: prefixSize) asFloat
-						          round: 2]);
+					          (self averageTimeForPrefix: prefixSize) asFloat round:
+							          2 ]);
 		         yourself.
 
 	^ table
+
 ]
 
 { #category : 'benchmarks' }
@@ -1043,9 +994,10 @@ CoStaticBenchmarks >> totalMemoryForPrefix: prefixSize [
 { #category : 'metrics' }
 CoStaticBenchmarks >> totalTime [
 
-    ^ completionTimes values
-        inject: 0
-        into: [ :sum :timeArray | sum + timeArray first ]
+	"Returns the total execution time for all benchmarks."
+	^ completionTimes values
+		  inject: 0
+		  into: [ :sum :timeArray | sum + timeArray first ]
 ]
 
 { #category : 'metrics' }
@@ -1065,12 +1017,7 @@ CoStaticBenchmarks >> totalTimeInspectionResults [
 
 { #category : 'benchmarks' }
 CoStaticBenchmarks >> trackCompletionResultsFor: receiver atIndex: completionIndex withPrefix: prefix [
-
-	self subclassResponsibility
-]
-
-{ #category : 'benchmarks' }
-CoStaticBenchmarks >> trackCompletionResultsForSelector: originalSelector atIndex: completionIndex withPrefix: prefix [
-
+	
+	"A method meant to track completion accuracy."
 	self subclassResponsibility
 ]

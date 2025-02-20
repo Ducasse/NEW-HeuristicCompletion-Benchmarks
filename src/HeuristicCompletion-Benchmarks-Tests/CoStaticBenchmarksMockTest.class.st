@@ -57,31 +57,28 @@ CoStaticBenchmarksMockTest >> testBuilder [
 { #category : 'running' }
 CoStaticBenchmarksMockTest >> testDiff [
 
-    | benchA benchB diffResult |
-    benchA := CoStaticBenchmarksMessageMock new.
-    benchB := CoStaticBenchmarksMessageMock new.
+	| benchA benchB diffResult |
+	benchA := CoStaticBenchmarks new.
+	benchB := CoStaticBenchmarks new.
 
-    diffResult := benchA diff: benchB.
+	diffResult := benchA diff: benchB.
 
-    "Check that diffResult is an array."
-    self assert: diffResult isArray.
+	"Check that diffResult is an array."
+	self assert: diffResult isArray.
 
-    "Ensure it contains exactly 3 associations."
-    self assert: (diffResult size = 3).
+	"Ensure it contains exactly 3 associations."
+	self assert: diffResult size equals: 3.
 
-    "Check that each entry is an association (key -> value)."
-    diffResult do: [ :entry |
-        self assert: entry isAssociation.  "Each entry should be a key -> value pair"
-        self assert: entry value isArray.  "The value of the association should be an array"
-        self assert: (entry value size = 3).  "Ensure the outer array contains 3 elements"
-        
-        "Ensure that each sub-array has 5 elements"
-        entry value do: [ :subArray |
-            self assert: subArray isArray.  "Each sub-array should be an array"
-            self assert: (subArray size = 5).  "Each sub-array should have 5 elements"
-        ].
-    ].
+	"Check that each entry is an association (key -> value)."
+	diffResult do: [ :entry |
+		self assert: entry isAssociation. "Each entry should be a key -> value pair"
+		self assert: entry value isArray. "The value of the association should be an array"
+		self assert: entry value size equals: 3. "Ensure the outer array contains 3 elements"
 
+		"Ensure that each sub-array has 5 elements"
+		entry value do: [ :subArray |
+			self assert: subArray isArray. "Each sub-array should be an array"
+			self assert: subArray size equals: 5 "Each sub-array should have 5 elements" ] ]
 ]
 
 { #category : 'running' }

@@ -1,5 +1,70 @@
 "
-I'm a subclass that handles the Message during the bench
+```smalltalk
+global := CoStaticBenchmarksMessage new
+    scope: (CoBenchmarkPackage on: SpAbstractAdapter package);
+    builder: (CoGlobalSorterResultSetBuilder new
+        sorterClass: AlphabeticSorter;
+        yourself);
+    run.
+
+""Get the total accuracy of finding the right result among the first 3 results when typing 2 characters.""
+(global accuracyForCompletionIndex: (1 to: 3) withPrefixSize: 2) asFloat.
+```
+
+And similarly:
+
+```smalltalk
+staticHeuristics := CoStaticBenchmarksMessage new
+    scope: (CoBenchmarkPackage on: SpAbstractAdapter package);
+    builder: CoASTHeuristicsResultSetBuilder new;
+    run.
+
+""Get the total accuracy of finding the right result among the first 3 when typing 2 characters.""
+(staticHeuristics accuracyForCompletionIndex: (1 to: 3) withPrefixSize: 2) asFloat.
+```
+
+To show all the Benchmarks use:
+
+```smalltalk
+global := CoStaticBenchmarksMessage runAllOnClass: SpAbstractAdapter package.
+
+global := CoStaticBenchmarksMessage runAllOnPackage: 'NECompletion'.
+```
+
+To extract the table in latex code to a specific sorter and for a specific metric :
+
+```smalltalk
+latex := (global at: #SizeSorter) latexResultsFor: #mmr.
+```
+
+
+To see how well completions do on 5-character selectors:
+
+```smalltalk
+global := accuracyPerSelectorLength: 5
+```
+
+To make Comparaison between two benchmarks:
+
+```smalltalk
+benhA := CoStaticBenchmarksMessage new
+    scope: (CoBenchmarkPackage on: SpAbstractAdapter package);
+    builder: (CoGlobalSorterResultSetBuilder new
+        sorterClass: AlphabeticSorter;
+        yourself);
+    run.
+
+
+benhB := CoStaticBenchmarksMessage new
+    scope: (CoBenchmarkPackage on: SpAbstractValidation package);
+    builder: (CoGlobalSorterResultSetBuilder new
+        sorterClass: AlphabeticSorter;
+        yourself);
+    run.
+
+
+comparison := benhA diff: benhB.
+```
 "
 Class {
 	#name : 'CoStaticBenchmarksMessage',

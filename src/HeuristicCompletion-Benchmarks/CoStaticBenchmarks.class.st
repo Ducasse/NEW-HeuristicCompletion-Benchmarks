@@ -36,74 +36,7 @@ Below is a short overview of the main responsibilities and methods:
 
 ## Typical Usage
 
-Here is an example of how you might run benchmarks on a given package or class:
-
-```smalltalk
-global := CoStaticBenchmarks new
-    scope: (CoBenchmarkPackage on: SpAbstractAdapter package);
-    builder: (CoGlobalSorterResultSetBuilder new
-        sorterClass: AlphabeticSorter;
-        yourself);
-    run.
-
-""Get the total accuracy of finding the right result among the first 3 results when typing 2 characters.""
-(global accuracyForCompletionIndex: (1 to: 3) withPrefixSize: 2) asFloat.
-```
-
-And similarly:
-
-```smalltalk
-staticHeuristics := CoStaticBenchmarks new
-    scope: (CoBenchmarkPackage on: SpAbstractAdapter package);
-    builder: CoASTHeuristicsResultSetBuilder new;
-    run.
-
-""Get the total accuracy of finding the right result among the first 3 when typing 2 characters.""
-(staticHeuristics accuracyForCompletionIndex: (1 to: 3) withPrefixSize: 2) asFloat.
-```
-
-To show all the Benchmarks use:
-
-```smalltalk
-global := CoStaticBenchmarks runAllOnClass: SpAbstractAdapter package.
-
-global := CoStaticBenchmarks runAllOnPackage: 'NECompletion'.
-```
-
-To extract the table in latex code to a specific sorter and for a specific metric :
-
-```smalltalk
-latex := (global at: #SizeSorter) latexResultsFor: #mmr.
-```
-
-
-To see how well completions do on 5-character selectors:
-
-```smalltalk
-global := accuracyPerSelectorLength: 5
-```
-
-To make Comparaison between two benchmarks:
-
-```smalltalk
-benhA := CoStaticBenchmarks new
-    scope: (CoBenchmarkPackage on: SpAbstractAdapter package);
-    builder: (CoGlobalSorterResultSetBuilder new
-        sorterClass: AlphabeticSorter;
-        yourself);
-    run.
-
-
-benhB := CoStaticBenchmarks new
-    scope: (CoBenchmarkPackage on: SpAbstractValidation package);
-    builder: (CoGlobalSorterResultSetBuilder new
-        sorterClass: AlphabeticSorter;
-        yourself);
-    run.
-
-
-comparison := benhA diff: benhB.
-```
+Here is an example of how you might run benchmarks on a given package or class ( see my subclasses )
 
 Using these benchmarks, you can measure:
 

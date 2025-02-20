@@ -4,8 +4,9 @@ This is a mock class to simulate an exmpale of data to test some functionalities
 Class {
 	#name : 'CoStaticBenchmarksMock',
 	#superclass : 'CoStaticBenchmarks',
-	#category : 'HeuristicCompletion-Benchmarks-Tests',
-	#package : 'HeuristicCompletion-Benchmarks-Tests'
+	#category : 'HeuristicCompletion-Benchmarks-Tests-Mock',
+	#package : 'HeuristicCompletion-Benchmarks-Tests',
+	#tag : 'Mock'
 }
 
 { #category : 'benchmarks' }

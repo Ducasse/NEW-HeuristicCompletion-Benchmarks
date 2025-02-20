@@ -4,8 +4,9 @@ Class {
 	#instVars : [
 		'benchmarks'
 	],
-	#category : 'HeuristicCompletion-Benchmarks-Tests',
-	#package : 'HeuristicCompletion-Benchmarks-Tests'
+	#category : 'HeuristicCompletion-Benchmarks-Tests-Mock',
+	#package : 'HeuristicCompletion-Benchmarks-Tests',
+	#tag : 'Mock'
 }
 
 { #category : 'running' }

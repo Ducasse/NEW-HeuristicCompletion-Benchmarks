@@ -8,21 +8,21 @@ Class {
 	#package : 'HeuristicCompletion-Benchmarks'
 }
 
-{ #category : 'benchmarking' }
+{ #category : 'benchmarks' }
 CoStaticBenchmarksVaribales >> benchCallsite: aMessageNode atPosition: aPosition [
 
 	| receiver |
 	receiver := aMessageNode receiver.
 
 	2 to: (aMessageNode receiver name size min: 8) do: [ :index |
-		| prefix startTime endTime executionTime completion candidates completionIndex previousResultsPerIndexPerPrefixSize |
-		"Start timing"
+		| prefix startTime endTime executionTime startMemory endMemory memoryUsed completion candidates completionIndex previousResultsPerIndexPerPrefixSize |
 		startTime := Time millisecondClockValue.
-
+		startMemory := self currentMemoryUsage.
+		
 		prefix := receiver name copyFrom: 1 to: index.
+
 		aMessageNode receiver: (OCVariableNode named: prefix).
 
-	
 		completion := builder
 			              node: aMessageNode receiver;
 			              completionContext: (CoBenchmarkContext new
@@ -33,12 +33,12 @@ CoStaticBenchmarksVaribales >> benchCallsite: aMessageNode atPosition: aPosition
 
 		completion replaceFilterWith:
 			(CoCaseSensitiveBeginsWithFilter filterString: prefix).
+
 		candidates := completion first: 10.
 
 		completionIndex := (candidates collect: [ :each | each contents ])
 			                   indexOf: receiver name.
 
-		"Existing logic: update completionBenchs dictionary"
 		previousResultsPerIndexPerPrefixSize := completionBenchs
 			                                        at: completionIndex
 			                                        at: prefix size
@@ -51,12 +51,14 @@ CoStaticBenchmarksVaribales >> benchCallsite: aMessageNode atPosition: aPosition
 				(previousResultsPerIndexPerPrefixSize first + 1).
 				previousResultsPerIndexPerPrefixSize second }.
 
-		"Stop timing and record it"
+		endMemory := self currentMemoryUsage.
+		memoryUsed := endMemory - startMemory.
+		self logMemory: memoryUsed forPrefix: prefix size.
+
 		endTime := Time millisecondClockValue.
 		executionTime := endTime - startTime.
 		self logTime: executionTime forPrefix: prefix size ].
 
-	"Restore the original selector"
 	aMessageNode receiver: receiver
 ]
 

@@ -31,24 +31,13 @@ Class {
 { #category : 'running' }
 CoStaticBenchmarks class >> customHeuristics: aBuilder [
 
-	aBuilder variablesHeuristic: (aBuilder newHeuristicBuilder
-			 add: CoLocalScopeVariablesHeuristic new;
-			 add: CoWorkspaceVariablesHeuristic new;
-			 add: CoInstanceAccessibleVariablesHeuristic new;
-			 add: (CoGlobalVariablesHeuristic new globalVariableFetcherClass:
-						  CoPackageScopedGlobalVariableFetcher);
-			 build)
+	self subclassResponsibility
 ]
 
 { #category : 'running' }
 CoStaticBenchmarks class >> defaultHeuristics: aBuilder [
 
-	aBuilder variablesHeuristic: (aBuilder newHeuristicBuilder
-			 add: CoLocalScopeVariablesHeuristic new;
-			 add: CoWorkspaceVariablesHeuristic new;
-			 add: CoInstanceAccessibleVariablesHeuristic new;
-			 add: CoGlobalVariablesHeuristic new;
-			 build)
+	self subclassResponsibility
 ]
 
 { #category : 'running' }

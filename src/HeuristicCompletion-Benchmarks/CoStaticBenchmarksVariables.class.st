@@ -8,31 +8,6 @@ Class {
 	#package : 'HeuristicCompletion-Benchmarks'
 }
 
-{ #category : 'running' }
-CoStaticBenchmarksVariables class >> customHeuristics: aBuilder [
-    aBuilder variablesHeuristic: (aBuilder newHeuristicBuilder
-add: CoLocalScopeVariablesHeuristic new;
-			                        add: CoWorkspaceVariablesHeuristic new;
-			                        add:
-				                        CoInstanceAccessibleVariablesHeuristic new;
-			                        add:
-				                        (CoGlobalVariablesHeuristic new
-					                         globalVariableFetcherClass:
-						                         CoPackageScopedGlobalVariableFetcher);
-        build).
-]
-
-{ #category : 'running' }
-CoStaticBenchmarksVariables class >> defaultHeuristics: aBuilder [
-
-	aBuilder variablesHeuristic: (aBuilder newHeuristicBuilder
-			 add: CoLocalScopeVariablesHeuristic new;
-			 add: CoWorkspaceVariablesHeuristic new;
-			 add: CoInstanceAccessibleVariablesHeuristic new;
-			 add: CoGlobalVariablesHeuristic new;
-			 build)
-]
-
 { #category : 'benchmarks' }
 CoStaticBenchmarksVariables >> benchCallsite: aMessageNode atPosition: aPosition [
 

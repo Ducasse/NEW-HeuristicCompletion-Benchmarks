@@ -31,13 +31,24 @@ Class {
 { #category : 'running' }
 CoStaticBenchmarks class >> customHeuristics: aBuilder [
 
-	self subclassResponsibility
+	aBuilder variablesHeuristic: (aBuilder newHeuristicBuilder
+			 add: CoLocalScopeVariablesHeuristic new;
+			 add: CoWorkspaceVariablesHeuristic new;
+			 add: CoInstanceAccessibleVariablesHeuristic new;
+			 add: (CoGlobalVariablesHeuristic new globalVariableFetcherClass:
+						  CoPackageScopedGlobalVariableFetcher);
+			 build)
 ]
 
 { #category : 'running' }
 CoStaticBenchmarks class >> defaultHeuristics: aBuilder [
 
-	self subclassResponsibility
+	aBuilder variablesHeuristic: (aBuilder newHeuristicBuilder
+			 add: CoLocalScopeVariablesHeuristic new;
+			 add: CoWorkspaceVariablesHeuristic new;
+			 add: CoInstanceAccessibleVariablesHeuristic new;
+			 add: CoGlobalVariablesHeuristic new;
+			 build)
 ]
 
 { #category : 'running' }
@@ -78,12 +89,11 @@ CoStaticBenchmarks class >> runAllOnPackage: aPackageIdentifier [
 CoStaticBenchmarks class >> runAllOnPackage: aPackageOrName heuristics: aHeuristicsBlock [
 
 	| benchmark builder package |
-
 	package := aPackageOrName isString
 		           ifTrue: [
 		           PackageOrganizer default packageNamed: aPackageOrName ]
 		           ifFalse: [ aPackageOrName ].
-		
+
 	package ifNil: [
 		^ self error: 'Package not found: ' , aPackageOrName printString ].
 

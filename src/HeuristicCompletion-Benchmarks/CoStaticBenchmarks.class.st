@@ -29,42 +29,15 @@ Class {
 }
 
 { #category : 'running' }
-CoStaticBenchmarks class >> runAllOnClass: aPackage [
-    "Runs the CoStaticBenchmarks for every sorter class in sorterClasses,
-    all using the given package as the scope. 
-    Answers a Dictionary from sorter class symbols to the resulting CoStaticBenchmarks instance 
-    so you can inspect or retrieve results later."
-    
-    | results |
-    results := Dictionary new.
-    
-    self sorterClasses do: [ :sorterSymbol |
-        | sorterClass benchmark |
-        
-        "Retrieve the actual class object for the symbol"
-        sorterClass := Smalltalk at: sorterSymbol ifAbsent: [ 
-            self error: (String streamContents: [ :s | 
-    				s nextPutAll: 'Sorter class '.
-    				s nextPutAll: sorterSymbol asString.
-    				s nextPutAll: ' not found in Smalltalk image.'
-			])
-        ].
+CoStaticBenchmarks class >> customHeuristics: aBuilder [
 
-        "Create and run a new benchmark for that sorter"
-        benchmark := self new
-            scope: (CoBenchmarkPackage on: aPackage);
-            builder: (CoGlobalSorterResultSetBuilder new
-                sorterClass: sorterClass;
-                yourself);
-            yourself.
+	self subclassResponsibility
+]
 
-        benchmark run.
+{ #category : 'running' }
+CoStaticBenchmarks class >> defaultHeuristics: aBuilder [
 
-        "Store the instance so we can retrieve/inspect it later"
-        results at: sorterSymbol put: benchmark
-    ].
-
-    ^ results
+	self subclassResponsibility
 ]
 
 { #category : 'running' }
@@ -102,6 +75,32 @@ CoStaticBenchmarks class >> runAllOnPackage: aPackageIdentifier [
 ]
 
 { #category : 'running' }
+CoStaticBenchmarks class >> runAllOnPackage: aPackageOrName heuristics: aHeuristicsBlock [
+
+	| benchmark builder package |
+
+	package := aPackageOrName isString
+		           ifTrue: [
+		           PackageOrganizer default packageNamed: aPackageOrName ]
+		           ifFalse: [ aPackageOrName ].
+		
+	package ifNil: [
+		^ self error: 'Package not found: ' , aPackageOrName printString ].
+
+	builder := CoASTHeuristicsResultSetBuilder new.
+	aHeuristicsBlock value: builder.
+
+	"Create and run the benchmark"
+	benchmark := self new
+		             scope: (CoBenchmarkPackage on: package);
+		             builder: builder;
+		             yourself.
+
+	benchmark run.
+	^ benchmark
+]
+
+{ #category : 'running' }
 CoStaticBenchmarks class >> runFor: aClass [
 
 	^ self new
@@ -110,63 +109,10 @@ CoStaticBenchmarks class >> runFor: aClass [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarks class >> runForPackage: aPackageOrName [
-    | benchmark builder package |
-    
-    "Ensure we have an RPackage instance"
-    package := aPackageOrName isString
-        ifTrue: [ PackageOrganizer default packageNamed: aPackageOrName ]
-        ifFalse: [ aPackageOrName ].
-
-    "Check if the package exists"
-    package ifNil: [ ^ self error: 'Package not found: ', aPackageOrName printString ].
-
-    "Build the heuristic result set"
-    builder := CoASTHeuristicsResultSetBuilder new.
-    builder variablesHeuristic: (builder newHeuristicBuilder
-        add: CoLocalScopeVariablesHeuristic new;
-        add: CoWorkspaceVariablesHeuristic new;
-        add: CoInstanceAccessibleVariablesHeuristic new;
-        add: CoGlobalVariablesHeuristic new;
-        build).
-
-    "Create and run the benchmark"
-    benchmark := self new
-        scope: (CoBenchmarkPackage on: package);
-        builder: builder;
-        yourself.
-    benchmark run.
-
-    ^ benchmark
-
-]
-
-{ #category : 'running' }
-CoStaticBenchmarks class >> runForPackageCustom: aPackage [
-
-	| benchmark builder |
-	builder := CoASTHeuristicsResultSetBuilder new.
-	builder variablesHeuristic: (builder newHeuristicBuilder
-			 add: CoLocalScopeVariablesHeuristic new;
-			 add: CoWorkspaceVariablesHeuristic new;
-			 add: CoInstanceAccessibleVariablesHeuristic new;
-			 add: (CoGlobalVariablesHeuristic new globalVariableFetcherClass:
-						  CoPackageScopedGlobalVariableFetcher);
-			 build).
-
-	benchmark := self new
-		             scope: (CoBenchmarkPackage on: aPackage);
-		             builder: builder;
-		             yourself.
-	benchmark run.
-	^ benchmark
-]
-
-{ #category : 'running' }
 CoStaticBenchmarks class >> sorterClasses [
 
-    "Answers an array of the symbols of all sorter classes to be run."
-    ^ #( AlphabeticSorter ReverseAlphabeticSorter NoSorter SizeSorter )
+	"Answers an array of the symbols of all sorter classes to be run."
+	^ #( AlphabeticSorter ReverseAlphabeticSorter NoSorter SizeSorter )
 ]
 
 { #category : 'metrics' }

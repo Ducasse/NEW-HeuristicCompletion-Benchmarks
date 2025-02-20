@@ -14,52 +14,74 @@ CoStaticBenchmarksVaribales >> benchCallsite: aMessageNode atPosition: aPosition
 	| receiver |
 	receiver := aMessageNode receiver.
 
-	2 to: (aMessageNode receiver name size min: 8) do: [ :index |
-		| prefix startTime endTime executionTime startMemory endMemory memoryUsed completion candidates completionIndex previousResultsPerIndexPerPrefixSize |
-		startTime := Time millisecondClockValue.
-		startMemory := self currentMemoryUsage.
-		
-		prefix := receiver name copyFrom: 1 to: index.
+	2 to: (self maxPrefixSizeFor: receiver) do: [ :index |
+		| prefix startTime startMemory completion candidates completionIndex |
 
+		startTime := self startTimeMeasurement.
+		startMemory := self startMemoryMeasurement.
+
+		prefix := self extractPrefixFrom: receiver at: index.
 		aMessageNode receiver: (OCVariableNode named: prefix).
 
-		completion := builder
-			              node: aMessageNode receiver;
-			              completionContext: (CoBenchmarkContext new
-					               callsite: aMessageNode;
-					               position: aPosition;
-					               yourself);
-			              buildCompletion.
+		completion := self buildCompletionFor: aMessageNode atPosition: aPosition.
 
-		completion replaceFilterWith:
-			(CoCaseSensitiveBeginsWithFilter filterString: prefix).
+		candidates := self fetchTopCandidatesFrom: completion usingPrefix: prefix.
+		completionIndex := self findCompletionIndexFor: receiver inCandidates: candidates.
 
-		candidates := completion first: 10.
+		self trackCompletionResultsFor: receiver atIndex: completionIndex withPrefix: prefix.
 
-		completionIndex := (candidates collect: [ :each | each contents ])
-			                   indexOf: receiver name.
+		self logMemoryUsageSince: startMemory forPrefixSize: prefix size.
+		self logExecutionTimeSince: startTime forPrefixSize: prefix size ].
 
-		previousResultsPerIndexPerPrefixSize := completionBenchs
-			                                        at: completionIndex
-			                                        at: prefix size
-			                                        ifAbsent: [
-				                                        {
-					                                        0.
-					                                        Set new } ].
-		previousResultsPerIndexPerPrefixSize second add: receiver.
-		completionBenchs at: completionIndex at: prefix size put: {
-				(previousResultsPerIndexPerPrefixSize first + 1).
-				previousResultsPerIndexPerPrefixSize second }.
+	aMessageNode receiver: receiver.
 
-		endMemory := self currentMemoryUsage.
-		memoryUsed := endMemory - startMemory.
-		self logMemory: memoryUsed forPrefix: prefix size.
+]
 
-		endTime := Time millisecondClockValue.
-		executionTime := endTime - startTime.
-		self logTime: executionTime forPrefix: prefix size ].
+{ #category : 'benchmarks' }
+CoStaticBenchmarksVaribales >> buildCompletionFor: aMessageNode atPosition: aPosition [
+	^ builder
+		node: aMessageNode receiver;
+		completionContext: (CoBenchmarkContext new
+			callsite: aMessageNode;
+			position: aPosition;
+			yourself);
+		buildCompletion.
+]
 
-	aMessageNode receiver: receiver
+{ #category : 'benchmarks' }
+CoStaticBenchmarksVaribales >> extractPrefixFrom: receiver at: index [
+	^ receiver name copyFrom: 1 to: index.
+]
+
+{ #category : 'benchmarks' }
+CoStaticBenchmarksVaribales >> fetchTopCandidatesFrom: completion usingPrefix: prefix [
+	completion replaceFilterWith: (CoCaseSensitiveBeginsWithFilter filterString: prefix).
+	^ completion first: 10.
+]
+
+{ #category : 'benchmarks' }
+CoStaticBenchmarksVaribales >> findCompletionIndexFor: receiver inCandidates: candidates [
+	^ (candidates collect: [ :each | each contents ]) indexOf: receiver name.
+]
+
+{ #category : 'benchmarks' }
+CoStaticBenchmarksVaribales >> logExecutionTimeSince: startTime forPrefixSize: prefixSize [
+	| executionTime |
+	executionTime := Time millisecondClockValue - startTime.
+	self logTime: executionTime forPrefix: prefixSize.
+]
+
+{ #category : 'benchmarks' }
+CoStaticBenchmarksVaribales >> logMemoryUsageSince: startMemory forPrefixSize: prefixSize [
+	| memoryUsed |
+	memoryUsed := self currentMemoryUsage - startMemory.
+	self logMemory: memoryUsed forPrefix: prefixSize.
+]
+
+{ #category : 'benchmarks' }
+CoStaticBenchmarksVaribales >> maxPrefixSizeFor: receiver [
+	^ receiver name size min: 8.
+
 ]
 
 { #category : 'running' }
@@ -69,4 +91,27 @@ CoStaticBenchmarksVaribales >> run [
 		method parseTree nodesDo: [ :node |
 			(node isMessage and: [ node receiver isVariable and: [ node receiver name first isUppercase ]])
 				ifTrue: [ self benchCallsite: node atPosition: node keywordsIntervals first ] ] ]
+]
+
+{ #category : 'benchmarks' }
+CoStaticBenchmarksVaribales >> startMemoryMeasurement [
+	^ self currentMemoryUsage.
+]
+
+{ #category : 'benchmarks' }
+CoStaticBenchmarksVaribales >> startTimeMeasurement [
+	^ Time millisecondClockValue.
+]
+
+{ #category : 'benchmarks' }
+CoStaticBenchmarksVaribales >> trackCompletionResultsFor: receiver atIndex: completionIndex withPrefix: prefix [
+	| previousResultsPerIndexPerPrefixSize |
+	previousResultsPerIndexPerPrefixSize := completionBenchs
+		at: completionIndex
+		at: prefix size
+		ifAbsent: [ { 0. Set new } ].
+	previousResultsPerIndexPerPrefixSize second add: receiver.
+	completionBenchs at: completionIndex at: prefix size put: {
+		(previousResultsPerIndexPerPrefixSize first + 1).
+		previousResultsPerIndexPerPrefixSize second }.
 ]

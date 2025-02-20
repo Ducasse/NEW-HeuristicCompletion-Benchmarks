@@ -308,7 +308,7 @@ CoStaticBenchmarks >> averageTimeForPrefix: prefixSize [
         ifFalse: [ ^ times first / times second ]
 ]
 
-{ #category : 'metrics' }
+{ #category : 'benchmarks' }
 CoStaticBenchmarks >> benchCallsite: aMessageNode atPosition: aPosition [ 
 
 	self subclassResponsibility
@@ -449,81 +449,6 @@ CoStaticBenchmarks >> initialize [
 	builder := CoASTHeuristicsResultSetBuilder new.
 	completionTimes := Dictionary new. 
 	memoryUsages := Dictionary new.
-]
-
-{ #category : 'printing' }
-CoStaticBenchmarks >> latexInspectionResults [
-
-    "Generate and return a LaTeX table representation of the data shown in #inspectionResults (accuracy table)."
-    | prefixSizes completionIndexRanges |
-    ^ String streamContents: [:s |
-        prefixSizes := self prefixSizes.
-        completionIndexRanges := self completionIndexes.  
-
-        s nextPutAll: '\begin{table}[ht]'; cr.
-        s nextPutAll: '\centering'; cr.
-        s nextPutAll: '\begin{tabular}{|l'.
-
-        prefixSizes size timesRepeat: [ s nextPutAll: '|c' ].
-        s nextPutAll: '|}'; cr.
-        s nextPutAll: '\hline'; cr.
-
-        s nextPutAll: 'Prefix'.
-        prefixSizes do: [:pSize |
-            s nextPutAll: ' & '.
-            s nextPutAll: pSize asString
-        ].
-        s nextPutAll: '\\ \hline'; cr.
-
-        completionIndexRanges do: [:range |
-            | label accuracyPercentage |
-            label := (range size = 1
-                ifTrue: [
-                    #('fail' '1st' '2nd' '3rd')
-                        at: (range first + 1)
-                        ifAbsent: [ range first asString ]
-                ]
-                ifFalse: [
-                    (range first asString), '-', (range last asString)
-                ]).
-            s nextPutAll: label.
-
-            prefixSizes do: [:pSize |
-                accuracyPercentage := (self accuracyForCompletionIndex: range withPrefixSize: pSize) * 100.
-                s nextPutAll: ' & '.
-                s nextPutAll: (accuracyPercentage printShowingDecimalPlaces: 2)
-            ].
-
-            s nextPutAll: '\\ \hline'; cr.
-        ].
-        s nextPutAll: '\end{tabular}'; cr.
-        s nextPutAll: '\caption{Completion Accuracy Results}'; cr.
-        s nextPutAll: '\end{table}'; cr.
-    ]
-]
-
-{ #category : 'printing' }
-CoStaticBenchmarks >> latexMMRResults [
-
-    | prefixSizes |
-    prefixSizes := self prefixSizes.
-    ^ String streamContents: [:s |
-        s nextPutAll: '\begin{table}[ht]'; cr.
-        s nextPutAll: '\centering'; cr.
-        s nextPutAll: '\begin{tabular}{|c|c|}'; cr.
-        s nextPutAll: '\hline'; cr.
-        s nextPutAll: 'Prefix & MRR \\ \hline'; cr.
-        prefixSizes do: [:pSize |
-            | val |
-            val := (self mmrForPrefixSize: pSize) printShowingDecimalPlaces: 4.
-            s nextPutAll: pSize asString; nextPutAll: ' & '.
-            s nextPutAll: val; nextPutAll: ' \\ \hline'; cr.
-        ].
-        s nextPutAll: '\end{tabular}'; cr.
-        s nextPutAll: '\caption{Mean Reciprocal Rank by prefix size}'; cr.
-        s nextPutAll: '\end{table}'; cr.
-    ].
-
 ]
 
 { #category : 'printing' }
@@ -769,36 +694,6 @@ CoStaticBenchmarks >> latexResultsFor: metricType [
 		  s
 			  nextPutAll: '\end{table}';
 			  cr ]
-]
-
-{ #category : 'printing' }
-CoStaticBenchmarks >> latexTimeResults [
-
-    ^ String streamContents: [:s |
-        | prefixArray |
-        prefixArray := self prefixSizes.
-        s nextPutAll: '\begin{table}[ht]'; cr.
-        s nextPutAll: '\centering'; cr.
-        s nextPutAll: '\begin{tabular}{|c|c|c|c|}'; cr.
-        s nextPutAll: '\hline'; cr.
-        s nextPutAll: 'Prefix & Total (ms) & Count & Average (ms)\\ \hline'; cr.
-
-        prefixArray do: [:pSize |
-            | total count average |
-            total := self totalTimeForPrefix: pSize.
-            count := (completionTimes at: pSize ifAbsent: [ #(0 0) ]) second.
-            average := self averageTimeForPrefix: pSize.
-            s
-                nextPutAll: pSize asString; nextPutAll: ' & ';
-                print: total; nextPutAll: ' & ';
-                print: count; nextPutAll: ' & ';
-                print: (average roundTo: 0.01); 
-                nextPutAll: '\\ \hline'; cr
-        ].
-        s nextPutAll: '\end{tabular}'; cr.
-        s nextPutAll: '\caption{Completion Time Results}'; cr.
-        s nextPutAll: '\end{table}'; cr.
-    ]
 ]
 
 { #category : 'metrics' }
@@ -1070,7 +965,7 @@ CoStaticBenchmarks >> recallInspectionResults [
 	^ table
 ]
 
-{ #category : 'metrics' }
+{ #category : 'running' }
 CoStaticBenchmarks >> run [ 
 
 		self subclassResponsibility
@@ -1143,7 +1038,6 @@ CoStaticBenchmarks >> totalMemoryForPrefix: prefixSize [
 { #category : 'metrics' }
 CoStaticBenchmarks >> totalTime [
 
-    "Sum over all prefix sizes"
     ^ completionTimes values
         inject: 0
         into: [ :sum :timeArray | sum + timeArray first ]

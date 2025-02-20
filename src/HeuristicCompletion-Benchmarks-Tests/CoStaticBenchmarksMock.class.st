@@ -11,3 +11,8 @@ Class {
 	#package : 'HeuristicCompletion-Benchmarks-Tests',
 	#tag : 'Mock'
 }
+
+{ #category : 'as yet unclassified' }
+CoStaticBenchmarksMock >> run [
+	^ self shouldBeImplemented
+]

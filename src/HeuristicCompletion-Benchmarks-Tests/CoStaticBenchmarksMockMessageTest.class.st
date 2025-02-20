@@ -133,8 +133,8 @@ CoStaticBenchmarksMockMessageTest >> testBuilder [
 CoStaticBenchmarksMockMessageTest >> testDiff [
 
     | benchA benchB diffResult |
-    benchA := CoStaticBenchmarksMockMessage new.
-    benchB := CoStaticBenchmarksMockMessage new.
+    benchA := CoStaticBenchmarksMessageMock new.
+    benchB := CoStaticBenchmarksMessageMock new.
 
     diffResult := benchA diff: benchB.
 

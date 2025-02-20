@@ -2,15 +2,15 @@
 This is a mock class to simulate an exmpale of data to test some functionalities in the Benchmarks like `diff` ...
 "
 Class {
-	#name : 'CoStaticBenchmarksMockMessage',
-	#superclass : 'CoStaticBenchmarks',
+	#name : 'CoStaticBenchmarksMessageMock',
+	#superclass : 'CoStaticBenchmarksMessage',
 	#category : 'HeuristicCompletion-Benchmarks-Tests-Message',
 	#package : 'HeuristicCompletion-Benchmarks-Tests',
 	#tag : 'Message'
 }
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksMockMessage >> accuracyForCompletionIndex: completionIndexRange withPrefixSize: prefixSize [
+CoStaticBenchmarksMessageMock >> accuracyForCompletionIndex: completionIndexRange withPrefixSize: prefixSize [
     "Returns a fake accuracy value between 0.0 and 1.0 
      (i.e., 0% to 100%) based purely on the inputs, 
      just to have a stable/deterministic output."
@@ -18,7 +18,7 @@ CoStaticBenchmarksMockMessage >> accuracyForCompletionIndex: completionIndexRang
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksMockMessage >> completionIndexes [
+CoStaticBenchmarksMessageMock >> completionIndexes [
     "Returns dummy completion index ranges.
      For example, the real #diff: method expects a collection of integer ranges."
     ^ #((0) (1) (2 to: 3))  "Just an example set of completion indexes"
@@ -26,7 +26,7 @@ CoStaticBenchmarksMockMessage >> completionIndexes [
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksMockMessage >> prefixSizes [
+CoStaticBenchmarksMessageMock >> prefixSizes [
     "Returns dummy prefix sizes."
     ^ #(1 2 3 4)
 ]

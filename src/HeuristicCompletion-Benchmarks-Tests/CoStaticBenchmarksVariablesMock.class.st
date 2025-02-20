@@ -1,5 +1,5 @@
 Class {
-	#name : 'CoStaticBenchmarksMockVariables',
+	#name : 'CoStaticBenchmarksVariablesMock',
 	#superclass : 'CoStaticBenchmarksVaribales',
 	#category : 'HeuristicCompletion-Benchmarks-Tests-Variables',
 	#package : 'HeuristicCompletion-Benchmarks-Tests',
@@ -7,7 +7,7 @@ Class {
 }
 
 { #category : 'running' }
-CoStaticBenchmarksMockVariables >> setUp [
+CoStaticBenchmarksVariablesMock >> setUp [
     super initialize.
 
     "Fake completions data"
@@ -39,7 +39,7 @@ CoStaticBenchmarksMockVariables >> setUp [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockVariables >> testAccuracy [
+CoStaticBenchmarksVariablesMock >> testAccuracy [
     | accuracy2 accuracy3 |
     accuracy2 := self accuracyForCompletionIndex: (1 to: 1) withPrefixSize: 2.
     accuracy3 := self accuracyForCompletionIndex: (1 to: 2) withPrefixSize: 3.
@@ -51,7 +51,7 @@ CoStaticBenchmarksMockVariables >> testAccuracy [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockVariables >> testDiff [
+CoStaticBenchmarksVariablesMock >> testDiff [
     | other result |
     other := self class new.
     other setUp.
@@ -71,7 +71,7 @@ CoStaticBenchmarksMockVariables >> testDiff [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockVariables >> testMMR [
+CoStaticBenchmarksVariablesMock >> testMMR [
     | mmr2 mmr3 overallMMR |
     mmr2 := self mmrForPrefixSize: 2.
     mmr3 := self mmrForPrefixSize: 3.
@@ -87,7 +87,7 @@ CoStaticBenchmarksMockVariables >> testMMR [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockVariables >> testMemory [
+CoStaticBenchmarksVariablesMock >> testMemory [
     | mem2 mem3 avg2 avg3 count2 count3 |
     mem2 := self totalMemoryForPrefix: 2.
     mem3 := self totalMemoryForPrefix: 3.
@@ -105,7 +105,7 @@ CoStaticBenchmarksMockVariables >> testMemory [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockVariables >> testNDCG [
+CoStaticBenchmarksVariablesMock >> testNDCG [
     | ndcg2 ndcg3 |
     ndcg2 := self ndcgForPrefixSize: 2.
     ndcg3 := self ndcgForPrefixSize: 3.
@@ -118,7 +118,7 @@ CoStaticBenchmarksMockVariables >> testNDCG [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockVariables >> testRankDistribution [
+CoStaticBenchmarksVariablesMock >> testRankDistribution [
     | dist2 dist3 |
     dist2 := self rankDistributionForPrefixSize: 2.
     dist3 := self rankDistributionForPrefixSize: 3.
@@ -129,7 +129,7 @@ CoStaticBenchmarksMockVariables >> testRankDistribution [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockVariables >> testRecall [
+CoStaticBenchmarksVariablesMock >> testRecall [
     | recall2At1 recall3At2 |
     recall2At1 := self recallAtK: 1 withPrefixSize: 2.
     recall3At2 := self recallAtK: 2 withPrefixSize: 3.
@@ -142,7 +142,7 @@ CoStaticBenchmarksMockVariables >> testRecall [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockVariables >> testTime [
+CoStaticBenchmarksVariablesMock >> testTime [
     | total2 avg2 total3 avg3 |
     total2 := self totalTimeForPrefix: 2.
     avg2   := self averageTimeForPrefix: 2.

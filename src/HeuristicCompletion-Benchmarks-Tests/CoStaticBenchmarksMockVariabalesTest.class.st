@@ -13,7 +13,7 @@ Class {
 CoStaticBenchmarksMockVariabalesTest >> setUp [
     super setUp.
     "Use the specialized variable/class name mock."
-    benchmarks := CoStaticBenchmarksMockVariables new.
+    benchmarks := CoStaticBenchmarksVariablesMock new.
     benchmarks setUp.  "Populates the mock data"
 ]
 

@@ -15,7 +15,7 @@ CoStaticBenchmarksVaribalesTest >> setUp [
     "Install or ensure the test method for VariableTestClass is compiled."
     VariableTestClass installTestMethod.
 
-    bench := CoStaticBenchmarksVaribales new.
+    bench := CoStaticBenchmarksVariables new.
     bench scope: VariableTestClass.
 
     "We can give it a fake builder with mock candidates for uppercase variables."

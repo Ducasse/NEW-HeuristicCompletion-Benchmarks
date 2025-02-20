@@ -2,14 +2,14 @@
 I'm class that handles the Varibales 
 "
 Class {
-	#name : 'CoStaticBenchmarksVaribales',
+	#name : 'CoStaticBenchmarksVariables',
 	#superclass : 'CoStaticBenchmarks',
 	#category : 'HeuristicCompletion-Benchmarks',
 	#package : 'HeuristicCompletion-Benchmarks'
 }
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> benchCallsite: aMessageNode atPosition: aPosition [
+CoStaticBenchmarksVariables >> benchCallsite: aMessageNode atPosition: aPosition [
 
 	| receiver |
 	receiver := aMessageNode receiver.
@@ -38,7 +38,7 @@ CoStaticBenchmarksVaribales >> benchCallsite: aMessageNode atPosition: aPosition
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> buildCompletionFor: aMessageNode atPosition: aPosition [
+CoStaticBenchmarksVariables >> buildCompletionFor: aMessageNode atPosition: aPosition [
 	^ builder
 		node: aMessageNode receiver;
 		completionContext: (CoBenchmarkContext new
@@ -49,43 +49,43 @@ CoStaticBenchmarksVaribales >> buildCompletionFor: aMessageNode atPosition: aPos
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> extractPrefixFrom: receiver at: index [
+CoStaticBenchmarksVariables >> extractPrefixFrom: receiver at: index [
 	^ receiver name copyFrom: 1 to: index.
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> fetchTopCandidatesFrom: completion usingPrefix: prefix [
+CoStaticBenchmarksVariables >> fetchTopCandidatesFrom: completion usingPrefix: prefix [
 	completion replaceFilterWith: (CoCaseSensitiveBeginsWithFilter filterString: prefix).
 	^ completion first: 10.
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> findCompletionIndexFor: receiver inCandidates: candidates [
+CoStaticBenchmarksVariables >> findCompletionIndexFor: receiver inCandidates: candidates [
 	^ (candidates collect: [ :each | each contents ]) indexOf: receiver name.
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> logExecutionTimeSince: startTime forPrefixSize: prefixSize [
+CoStaticBenchmarksVariables >> logExecutionTimeSince: startTime forPrefixSize: prefixSize [
 	| executionTime |
 	executionTime := Time millisecondClockValue - startTime.
 	self logTime: executionTime forPrefix: prefixSize.
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> logMemoryUsageSince: startMemory forPrefixSize: prefixSize [
+CoStaticBenchmarksVariables >> logMemoryUsageSince: startMemory forPrefixSize: prefixSize [
 	| memoryUsed |
 	memoryUsed := self currentMemoryUsage - startMemory.
 	self logMemory: memoryUsed forPrefix: prefixSize.
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> maxPrefixSizeFor: receiver [
+CoStaticBenchmarksVariables >> maxPrefixSizeFor: receiver [
 	^ receiver name size min: 8.
 
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksVaribales >> run [
+CoStaticBenchmarksVariables >> run [
 
 	scope methodsDo: [ :method |
 		method parseTree nodesDo: [ :node |
@@ -94,17 +94,17 @@ CoStaticBenchmarksVaribales >> run [
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> startMemoryMeasurement [
+CoStaticBenchmarksVariables >> startMemoryMeasurement [
 	^ self currentMemoryUsage.
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> startTimeMeasurement [
+CoStaticBenchmarksVariables >> startTimeMeasurement [
 	^ Time millisecondClockValue.
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksVaribales >> trackCompletionResultsFor: receiver atIndex: completionIndex withPrefix: prefix [
+CoStaticBenchmarksVariables >> trackCompletionResultsFor: receiver atIndex: completionIndex withPrefix: prefix [
 	| previousResultsPerIndexPerPrefixSize |
 	previousResultsPerIndexPerPrefixSize := completionBenchs
 		at: completionIndex

@@ -14,21 +14,21 @@ CoStaticBenchmarksMessage >> benchCallsite: aMessageNode atPosition: aPosition [
 	| originalSelector |
 	originalSelector := aMessageNode selector.
 
-	2 to: (self maxPrefixSizeForSelector: originalSelector) do: [ :index |
+	2 to: (self maxPrefixSizeFor: originalSelector) do: [ :index |
 		| prefix startTime startMemory completion candidates completionIndex |
 
 		startTime := self startTimeMeasurement.
 		startMemory := self startMemoryMeasurement.
 
-		prefix := self extractPrefixFromSelector: originalSelector at: index.
+		prefix := self extractPrefixFrom: originalSelector at: index.
 		aMessageNode selector: prefix.
 
 		completion := self buildCompletionFor: aMessageNode atPosition: aPosition.
 
 		candidates := self fetchTopCandidatesFrom: completion usingPrefix: prefix.
-		completionIndex := self findCompletionIndexForSelector: originalSelector inCandidates: candidates.
+		completionIndex := self findCompletionIndexFor: originalSelector inCandidates: candidates.
 
-		self trackCompletionResultsForSelector: originalSelector atIndex: completionIndex withPrefix: prefix.
+		self trackCompletionResultsFor: originalSelector atIndex: completionIndex withPrefix: prefix.
 
 		self logMemoryUsageSince: startMemory forPrefixSize: prefix size.
 		self logExecutionTimeSince: startTime forPrefixSize: prefix size ].
@@ -49,8 +49,9 @@ CoStaticBenchmarksMessage >> buildCompletionFor: aMessageNode atPosition: aPosit
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksMessage >> extractPrefixFromSelector: selector at: index [
-	^ selector copyFrom: 1 to: index.
+CoStaticBenchmarksMessage >> extractPrefixFrom: selector at: index [
+
+	^ selector copyFrom: 1 to: index
 ]
 
 { #category : 'benchmarks' }
@@ -60,8 +61,10 @@ CoStaticBenchmarksMessage >> fetchTopCandidatesFrom: completion usingPrefix: pre
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksMessage >> findCompletionIndexForSelector: originalSelector inCandidates: candidates [
-	^ (candidates collect: [ :each | each contents ]) indexOf: originalSelector.
+CoStaticBenchmarksMessage >> findCompletionIndexFor: originalSelector inCandidates: candidates [
+
+	^ (candidates collect: [ :each | each contents ]) indexOf:
+		  originalSelector
 ]
 
 { #category : 'benchmarks' }
@@ -79,8 +82,9 @@ CoStaticBenchmarksMessage >> logMemoryUsageSince: startMemory forPrefixSize: pre
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksMessage >> maxPrefixSizeForSelector: selector [
-	^ selector size min: 8.
+CoStaticBenchmarksMessage >> maxPrefixSizeFor: selector [
+
+	^ selector size min: 8
 ]
 
 { #category : 'running' }
@@ -105,14 +109,18 @@ CoStaticBenchmarksMessage >> startTimeMeasurement [
 ]
 
 { #category : 'benchmarks' }
-CoStaticBenchmarksMessage >> trackCompletionResultsForSelector: originalSelector atIndex: completionIndex withPrefix: prefix [
+CoStaticBenchmarksMessage >> trackCompletionResultsFor: originalSelector atIndex: completionIndex withPrefix: prefix [
+
 	| previousResultsPerIndexPerPrefixSize |
 	previousResultsPerIndexPerPrefixSize := completionBenchs
-		at: completionIndex
-		at: prefix size
-		ifAbsent: [ { 0. Set new } ].
+		                                        at: completionIndex
+		                                        at: prefix size
+		                                        ifAbsent: [
+			                                        {
+				                                        0.
+				                                        Set new } ].
 	previousResultsPerIndexPerPrefixSize second add: originalSelector.
 	completionBenchs at: completionIndex at: prefix size put: {
-		(previousResultsPerIndexPerPrefixSize first + 1).
-		previousResultsPerIndexPerPrefixSize second }.
+			(previousResultsPerIndexPerPrefixSize first + 1).
+			previousResultsPerIndexPerPrefixSize second }
 ]

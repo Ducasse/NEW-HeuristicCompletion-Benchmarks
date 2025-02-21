@@ -1,16 +1,15 @@
 Class {
-	#name : 'CoStaticBenchmarksMockTest',
+	#name : 'CoStaticBenchmarksMockTest1TD',
 	#superclass : 'TestCase',
 	#instVars : [
 		'benchmarks'
 	],
-	#category : 'HeuristicCompletion-Benchmarks-Tests-Mock',
-	#package : 'HeuristicCompletion-Benchmarks-Tests',
-	#tag : 'Mock'
+	#category : 'HeuristicCompletion-Benchmarks-Tests',
+	#package : 'HeuristicCompletion-Benchmarks-Tests'
 }
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> setUp [ 
+CoStaticBenchmarksMockTest1TD >> setUp [ 
 
 	super setUp.
 	benchmarks := CoStaticBenchmarks new.
@@ -19,14 +18,14 @@ CoStaticBenchmarksMockTest >> setUp [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> tearDown [ 
+CoStaticBenchmarksMockTest1TD >> tearDown [ 
 	
 	benchmarks := nil.
 	super tearDown.
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testAverageMemoryForPrefix [
+CoStaticBenchmarksMockTest1TD >> testAverageMemoryForPrefix [
 
 
 	benchmarks logMemory: 1000 forPrefix: 2.
@@ -36,7 +35,7 @@ CoStaticBenchmarksMockTest >> testAverageMemoryForPrefix [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testAverageTimeForPrefix [
+CoStaticBenchmarksMockTest1TD >> testAverageTimeForPrefix [
 
 	benchmarks logTime: 10 forPrefix: 3.
 	benchmarks logTime: 20 forPrefix: 3.
@@ -45,7 +44,7 @@ CoStaticBenchmarksMockTest >> testAverageTimeForPrefix [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testBuilder [
+CoStaticBenchmarksMockTest1TD >> testBuilder [
 
 	| newBuilder |
 	newBuilder := CoASTHeuristicsResultSetBuilder.
@@ -55,7 +54,7 @@ CoStaticBenchmarksMockTest >> testBuilder [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testDiff [
+CoStaticBenchmarksMockTest1TD >> testDiff [
 
 	| benchA benchB diffResult |
 	benchA := CoStaticBenchmarks new.
@@ -82,7 +81,7 @@ CoStaticBenchmarksMockTest >> testDiff [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testInitialize [
+CoStaticBenchmarksMockTest1TD >> testInitialize [
 
 	| bench time memory |
 	bench := benchmarks completionBenchs.
@@ -95,7 +94,7 @@ CoStaticBenchmarksMockTest >> testInitialize [
 ]
 
 { #category : 'tests' }
-CoStaticBenchmarksMockTest >> testInspectionResults [
+CoStaticBenchmarksMockTest1TD >> testInspectionResults [
 	"Just verify it returns something without error; 
      you might parse the returned table or string to ensure correct formatting."
 
@@ -105,7 +104,7 @@ CoStaticBenchmarksMockTest >> testInspectionResults [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testLogMemory [
+CoStaticBenchmarksMockTest1TD >> testLogMemory [
 
    "memoryUsages at: 2 => #( totalBytes count ) => #( 3072 2 )."
 	| stored |
@@ -118,7 +117,7 @@ CoStaticBenchmarksMockTest >> testLogMemory [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testLogTime [
+CoStaticBenchmarksMockTest1TD >> testLogTime [
 
     "completionTimes at: 2 => #( totalTime count ) => #( 50 2 )."
 	| stored |
@@ -130,7 +129,7 @@ CoStaticBenchmarksMockTest >> testLogTime [
 ]
 
 { #category : 'tests' }
-CoStaticBenchmarksMockTest >> testMMR [
+CoStaticBenchmarksMockTest1TD >> testMMR [
 
     "Add data to completionBenchs to simulate correct finds at rank=1 for prefix=2.
 	Now total for prefix=2 is 2, prefix=3 is 1 => total=3.
@@ -150,7 +149,7 @@ CoStaticBenchmarksMockTest >> testMMR [
 ]
 
 { #category : 'tests' }
-CoStaticBenchmarksMockTest >> testNDCG [
+CoStaticBenchmarksMockTest1TD >> testNDCG [
 
     | ndcgValue |
     "Simulate 2 correct finds at rank=1, prefix=2 => we should get near 1.0 for NDCG.
@@ -167,7 +166,7 @@ CoStaticBenchmarksMockTest >> testNDCG [
 ]
 
 { #category : 'tests' }
-CoStaticBenchmarksMockTest >> testRankDistributionForPrefixSize [
+CoStaticBenchmarksMockTest1TD >> testRankDistributionForPrefixSize [
 
     "We add 1 correct find at ranks 1, 2, and 3 for prefix=2. 
      Then #rankDistributionForPrefixSize: 2 => #(1 1 1 0 0 0 0 0 0 0)."
@@ -189,7 +188,7 @@ CoStaticBenchmarksMockTest >> testRankDistributionForPrefixSize [
 ]
 
 { #category : 'tests' }
-CoStaticBenchmarksMockTest >> testRecallAtK [
+CoStaticBenchmarksMockTest1TD >> testRecallAtK [
 
     "Total attempts for prefix=2 => 3, so recall@K=1 => 3/3 => 1.0"
     benchmarks completionBenchs
@@ -205,7 +204,7 @@ CoStaticBenchmarksMockTest >> testRecallAtK [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testScope [ 
+CoStaticBenchmarksMockTest1TD >> testScope [ 
 
 	| fakeClass |
 	fakeClass := Object.
@@ -214,7 +213,7 @@ CoStaticBenchmarksMockTest >> testScope [
 ]
 
 { #category : 'tests' }
-CoStaticBenchmarksMockTest >> testScore [
+CoStaticBenchmarksMockTest1TD >> testScore [
 	"The #score method is a bit arbitrary; it uses #gradeForPrefixSize, 
      which uses #accuracyForCompletionIndex: (2..8). 
      Here we just ensure it doesn't crash 
@@ -225,7 +224,7 @@ CoStaticBenchmarksMockTest >> testScore [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testTotalMemoryForPrefix [
+CoStaticBenchmarksMockTest1TD >> testTotalMemoryForPrefix [
 
 	benchmarks logMemory: 1000 forPrefix: 2.
 	benchmarks logMemory: 2000 forPrefix: 2.
@@ -234,7 +233,7 @@ CoStaticBenchmarksMockTest >> testTotalMemoryForPrefix [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testTotalTime [
+CoStaticBenchmarksMockTest1TD >> testTotalTime [
 
 	benchmarks logTime: 10 forPrefix: 2.
 	benchmarks logTime: 30 forPrefix: 3.
@@ -243,7 +242,7 @@ CoStaticBenchmarksMockTest >> testTotalTime [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMockTest >> testTotalTimeForPrefix [
+CoStaticBenchmarksMockTest1TD >> testTotalTimeForPrefix [
 
 	benchmarks logTime: 10 forPrefix: 3.
 	benchmarks logTime: 20 forPrefix: 3.

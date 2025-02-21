@@ -1,31 +1,30 @@
 Class {
-	#name : 'CoStaticBenchmarksVaribalesTest',
+	#name : 'CoStaticBenchmarksVaribalesTest1TD',
 	#superclass : 'TestCase',
 	#instVars : [
 		'bench'
 	],
-	#category : 'HeuristicCompletion-Benchmarks-Tests-Mock',
-	#package : 'HeuristicCompletion-Benchmarks-Tests',
-	#tag : 'Mock'
+	#category : 'HeuristicCompletion-Benchmarks-Tests',
+	#package : 'HeuristicCompletion-Benchmarks-Tests'
 }
 
 { #category : 'running' }
-CoStaticBenchmarksVaribalesTest >> setUp [
+CoStaticBenchmarksVaribalesTest1TD >> setUp [
     super setUp.
     "Install or ensure the test method for VariableTestClass is compiled."
-    VariableTestClass installTestMethod.
+    VariableTestClass1TD installTestMethod.
 
     bench := CoStaticBenchmarksVariables new.
-    bench scope: VariableTestClass.
+    bench scope: VariableTestClass1TD.
 
     "We can give it a fake builder with mock candidates for uppercase variables."
-    bench builder: (FakeCompletionBuilder new
+    bench builder: (FakeCompletionBuilder1TD new
                      mockCandidates: #('UpperCaseVar' 'UpperXyz' 'UnderCaseVar' 'foo')).
     bench completionBenchs: Dictionary new.
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksVaribalesTest >> testRunBench [
+CoStaticBenchmarksVaribalesTest1TD >> testRunBench [
     "Check that running the var-based benchmark logs results 
      when it sees an uppercase variable reference in testVariable method."
 

@@ -1,20 +1,19 @@
 Class {
-	#name : 'MessageTestClass',
+	#name : 'MessageTestClass1TD',
 	#superclass : 'Object',
-	#category : 'HeuristicCompletion-Benchmarks-Tests-Mock',
-	#package : 'HeuristicCompletion-Benchmarks-Tests',
-	#tag : 'Mock'
+	#category : 'HeuristicCompletion-Benchmarks-Tests',
+	#package : 'HeuristicCompletion-Benchmarks-Tests'
 }
 
 { #category : 'as yet unclassified' }
-MessageTestClass class >> installTestMethod [
+MessageTestClass1TD class >> installTestMethod [
     self compile: 'someMethod
         "A trivial method that has a message send ''asString'' & ''trim''."
         ^ ''Hello'' asString trim'
 ]
 
 { #category : 'as yet unclassified' }
-MessageTestClass >> someMethod [
+MessageTestClass1TD >> someMethod [
         "A trivial method that has a message send 'asString' & 'trim'."
         ^ 'Hello' asString trim
 ]

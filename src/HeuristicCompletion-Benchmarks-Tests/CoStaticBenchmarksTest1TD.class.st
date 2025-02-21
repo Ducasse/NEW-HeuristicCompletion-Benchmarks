@@ -1,16 +1,15 @@
 Class {
-	#name : 'CoStaticBenchmarksTest',
+	#name : 'CoStaticBenchmarksTest1TD',
 	#superclass : 'TestCase',
 	#instVars : [
 		'bench'
 	],
-	#category : 'HeuristicCompletion-Benchmarks-Tests-Mock',
-	#package : 'HeuristicCompletion-Benchmarks-Tests',
-	#tag : 'Mock'
+	#category : 'HeuristicCompletion-Benchmarks-Tests',
+	#package : 'HeuristicCompletion-Benchmarks-Tests'
 }
 
 { #category : 'running' }
-CoStaticBenchmarksTest >> setUp [
+CoStaticBenchmarksTest1TD >> setUp [
     "Set up a fresh instance before each test."
     super setUp.
     bench := CoStaticBenchmarks new.
@@ -21,7 +20,7 @@ CoStaticBenchmarksTest >> setUp [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksTest >> testAccuracyCalculation [
+CoStaticBenchmarksTest1TD >> testAccuracyCalculation [
     "Arrange a known distribution of completions:
      Suppose rank=1 had 2 hits, rank=2 had 1 hit, rank=3 had 0 hits, rank=4..10 had 0 hits
      for prefix size 2."
@@ -59,7 +58,7 @@ CoStaticBenchmarksTest >> testAccuracyCalculation [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksTest >> testLoggingMemory [
+CoStaticBenchmarksTest1TD >> testLoggingMemory [
 	"Make sure logging accumulates correctly in the dictionaries."
 
 	| prefixSize memoryBefore tolerance |
@@ -81,7 +80,7 @@ CoStaticBenchmarksTest >> testLoggingMemory [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksTest >> testLoggingTime [
+CoStaticBenchmarksTest1TD >> testLoggingTime [
 	"Make sure logging accumulates correctly in the dictionaries."
 
 	| prefixSize timesBefore tolerance |
@@ -109,7 +108,7 @@ CoStaticBenchmarksTest >> testLoggingTime [
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksTest >> testMRRCalculation [
+CoStaticBenchmarksTest1TD >> testMRRCalculation [
     "Test the MRR for a single prefix size distribution."
 
     | prefixSize rank1Entry rank2Entry rank3Entry mrr tolerance expectedMrr |

@@ -1,31 +1,30 @@
 Class {
-	#name : 'CoStaticBenchmarksMessageTest',
+	#name : 'CoStaticBenchmarksMessageTest1TD',
 	#superclass : 'TestCase',
 	#instVars : [
 		'bench'
 	],
-	#category : 'HeuristicCompletion-Benchmarks-Tests-Mock',
-	#package : 'HeuristicCompletion-Benchmarks-Tests',
-	#tag : 'Mock'
+	#category : 'HeuristicCompletion-Benchmarks-Tests',
+	#package : 'HeuristicCompletion-Benchmarks-Tests'
 }
 
 { #category : 'running' }
-CoStaticBenchmarksMessageTest >> setUp [
+CoStaticBenchmarksMessageTest1TD >> setUp [
     super setUp.
     "Install or ensure the test method is compiled into MessageTestClass."
-    MessageTestClass installTestMethod.
+    MessageTestClass1TD installTestMethod.
 
     bench := CoStaticBenchmarksMessage new.
-    bench scope: MessageTestClass.  "Set the scope to the class we want to benchmark."
+    bench scope: MessageTestClass1TD.  "Set the scope to the class we want to benchmark."
 
     "Set up a fake builder with known mock candidates."
-    bench builder: (FakeCompletionBuilder new
+    bench builder: (FakeCompletionBuilder1TD new
                      mockCandidates: #('asString' 'trim' 'printOn:' 'asUppercase' 'size')).
     bench completionBenchs: Dictionary new.  "Just to be sure it is empty initially."
 ]
 
 { #category : 'running' }
-CoStaticBenchmarksMessageTest >> testRunBench [
+CoStaticBenchmarksMessageTest1TD >> testRunBench [
     "Test that running the benchmark populates completionBenchs as expected."
 
     "Act: run the benchmark"

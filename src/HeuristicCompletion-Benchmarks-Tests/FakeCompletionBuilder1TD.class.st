@@ -1,22 +1,21 @@
 Class {
-	#name : 'FakeCompletionBuilder',
+	#name : 'FakeCompletionBuilder1TD',
 	#superclass : 'Object',
 	#instVars : [
 		'mockCandidates'
 	],
-	#category : 'HeuristicCompletion-Benchmarks-Tests-Mock',
-	#package : 'HeuristicCompletion-Benchmarks-Tests',
-	#tag : 'Mock'
+	#category : 'HeuristicCompletion-Benchmarks-Tests',
+	#package : 'HeuristicCompletion-Benchmarks-Tests'
 }
 
 { #category : 'accessing' }
-FakeCompletionBuilder >> buildCompletion [
+FakeCompletionBuilder1TD >> buildCompletion [
     "Return a new FakeCompletion loaded with mockCandidates."
     | c |
-    c := FakeCompletion new.
+    c := FakeCompletion1TD new.
     c candidates: (mockCandidates collect: [ :each |
         | candidate |
-        candidate := FakeCompletionCandidate new.
+        candidate := FakeCompletionCandidate1TD new.
         candidate contents: each.
         candidate
     ]).
@@ -24,18 +23,18 @@ FakeCompletionBuilder >> buildCompletion [
 ]
 
 { #category : 'accessing' }
-FakeCompletionBuilder >> completionContext: aContext [
+FakeCompletionBuilder1TD >> completionContext: aContext [
     "No-op. We ignore the context in our fake builder."
     ^ self
 ]
 
 { #category : 'accessing' }
-FakeCompletionBuilder >> mockCandidates: aCollection [
+FakeCompletionBuilder1TD >> mockCandidates: aCollection [
     mockCandidates := aCollection
 ]
 
 { #category : 'accessing' }
-FakeCompletionBuilder >> node: aNode [
+FakeCompletionBuilder1TD >> node: aNode [
     "No-op or store node if needed. We do nothing here for simplicity."
     ^ self
 ]
